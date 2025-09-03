@@ -39,5 +39,35 @@ pipeline {
        sh 'docker push moon2000/spring-petclinic:latest'
     }
    }
+    stage('Docker Image Remove') {
+      steps {
+        sh 'docker rmi moon2000/spring-petclinic:$BUILD_NUMBER moon2000/spring-petclinic:latest'
+        
+      }
+    }
+    stage('Publish Over SSH'){
+      steps {
+        sshPublisher(publishers: [sshPublisherDesc(configName: 'target', 
+        transfers: [sshTransfer(cleanRemote: false, 
+        excludes: '', 
+        execCommand: '''
+        docker rm -f $(docker ps -aq)
+        docker rmi $(docker images -q)
+        docker run -itd -p 8080:80808 --name=spring-petclinic moon2000/spring-petclinic:latest
+        ''', 
+        execTimeout: 120000, 
+        flatten: false, 
+        makeEmptyDirs: false, 
+        noDefaultExcludes: false, 
+        patternSeparator: '[, ]+', 
+        remoteDirectory: '', 
+        remoteDirectorySDF: false, 
+        removePrefix: 'target', 
+        sourceFiles: '')], 
+        usePromotionTimestamp: false, 
+        useWorkspaceInPromotion: false, 
+        verbose: false)])
+      }
+    }
   }
 }
