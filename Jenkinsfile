@@ -44,52 +44,51 @@ pipeline {
         sh 'docker rmi moon2000/spring-petclinic:$BUILD_NUMBER moon2000/spring-petclinic:latest'
       }
     }
-    stage('SSH Publish') {
-            steps {
-                echo 'SSH Publish'
-                sshPublisher(publishers: [sshPublisherDesc(configName: 'WEB01', 
-                transfers: [sshTransfer(cleanRemote: false, 
-                excludes: '', 
-                execCommand: '''
-                fuser -k 8080/tcp
-                export BUILD_ID=Petclinic-Pipeline
-                nohup java -jar /home/user1/deploy/spring-petclinic-3.5.0-SNAPSHOT.jar >> nohup.out 2>&1 &''', 
-                execTimeout: 120000, 
-                flatten: false, 
-                makeEmptyDirs: false, 
-                noDefaultExcludes: false, 
-                patternSeparator: '[, ]+', 
-                remoteDirectory: '', 
-                remoteDirectorySDF: false, 
-                removePrefix: 'target', 
-                sourceFiles: 'target/*.jar')], 
-                usePromotionTimestamp: false, 
-                useWorkspaceInPromotion: false, verbose: false)])
-            }
-        }
-    stage('SSH Publish') {
-            steps {
-                echo 'SSH Publish'
-                sshPublisher(publishers: [sshPublisherDesc(configName: 'WEB02', 
-                transfers: [sshTransfer(cleanRemote: false, 
-                excludes: '', 
-                execCommand: '''
-                fuser -k 8080/tcp
-                export BUILD_ID=Petclinic-Pipeline
-                nohup java -jar /home/user1/deploy/spring-petclinic-3.5.0-SNAPSHOT.jar >> nohup.out 2>&1 &''', 
-                execTimeout: 120000, 
-                flatten: false, 
-                makeEmptyDirs: false, 
-                noDefaultExcludes: false, 
-                patternSeparator: '[, ]+', 
-                remoteDirectory: '', 
-                remoteDirectorySDF: false, 
-                removePrefix: 'target', 
-                sourceFiles: 'target/*.jar')], 
-                usePromotionTimestamp: false, 
-                useWorkspaceInPromotion: false, verbose: false)])
-            }
-        }
+    stage('SSH Publish WEB01') {
+      steps {
+        echo 'SSH Publish'
+        sshPublisher(publishers: [sshPublisherDesc(configName: 'WEB01', 
+        transfers: [sshTransfer(cleanRemote: false, 
+        excludes: '', 
+        execCommand: '''
+        fuser -k 8080/tcp
+        export BUILD_ID=Petclinic-Pipeline
+        nohup java -jar /home/user1/deploy/spring-petclinic-3.5.0-SNAPSHOT.jar >> nohup.out 2>&1 &''', 
+        execTimeout: 120000, 
+        flatten: false, 
+        makeEmptyDirs: false, 
+        noDefaultExcludes: false, 
+        patternSeparator: '[, ]+', 
+        remoteDirectory: '', 
+        remoteDirectorySDF: false, 
+        removePrefix: 'target', 
+        sourceFiles: 'target/*.jar')], 
+        usePromotionTimestamp: false, 
+        useWorkspaceInPromotion: false, verbose: false)])
+      }
+    }
+    stage('SSH Publish WEB02') {
+      steps {
+        echo 'SSH Publish'
+        sshPublisher(publishers: [sshPublisherDesc(configName: 'WEB02', 
+        transfers: [sshTransfer(cleanRemote: false, 
+        excludes: '', 
+        execCommand: '''
+        fuser -k 8080/tcp
+        export BUILD_ID=Petclinic-Pipeline
+        nohup java -jar /home/user1/deploy/spring-petclinic-3.5.0-SNAPSHOT.jar >> nohup.out 2>&1 &''', 
+        execTimeout: 120000, 
+        flatten: false, 
+        makeEmptyDirs: false, 
+        noDefaultExcludes: false, 
+        patternSeparator: '[, ]+', 
+        remoteDirectory: '', 
+        remoteDirectorySDF: false, 
+        removePrefix: 'target', 
+        sourceFiles: 'target/*.jar')], 
+        usePromotionTimestamp: false, 
+        useWorkspaceInPromotion: false, verbose: false)])
+      }
+    }
   }
 }
-
