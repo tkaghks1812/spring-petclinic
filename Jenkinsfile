@@ -13,7 +13,7 @@ pipeline {
   stages{
     stage('Git Clone'){
       steps {
-        git url: 'https://github.com/tkaghks1812/spring-petclinic.git', branch: 'main'
+        git url: 'https://github.com/sjh4616/spring-petclinic.git', branch: 'main'
       }
     }
     stage('Maven Build'){
@@ -24,8 +24,8 @@ pipeline {
     stage('Docker Image Create') {
       steps {
         sh """
-        docker build -t moon2000/spring-petclinic:$BUILD_NUMBER .
-        docker tag moon2000/spring-petclinic:$BUILD_NUMBER moon2000/spring-petclinic:latest
+        docker build -t s4616/spring-petclinic:$BUILD_NUMBER .
+        docker tag s4616/spring-petclinic:$BUILD_NUMBER s4616/spring-petclinic:latest
         """
       }
     }
@@ -36,12 +36,12 @@ pipeline {
     }
     stage('Docker Image Push') {
       steps {
-        sh 'docker push moon2000/spring-petclinic:latest'
+        sh 'docker push s4616/spring-petclinic:latest'
       }
     }
     stage('Docker Image Remove') {
       steps {
-        sh 'docker rmi moon2000/spring-petclinic:$BUILD_NUMBER moon2000/spring-petclinic:latest'
+        sh 'docker rmi s4616/spring-petclinic:$BUILD_NUMBER s4616/spring-petclinic:latest'
       }
     }
     stage('Publish Over SSH') {
@@ -52,7 +52,7 @@ pipeline {
         execCommand: '''
         docker rm -f $(docker ps -aq)
         docker rmi $(docker images -q)
-        docker run -itd -p 8080:8080 --name=spring-petclinic moon2000/spring-petclinic:latest
+        docker run -itd -p 8080:8080 --name=spring-petclinic s4616/spring-petclinic:latest
         ''', 
         execTimeout: 120000, 
         flatten: false, 
@@ -71,6 +71,28 @@ pipeline {
   }
 }
 
-
-
+// *.jar 파일 전송
+stage('SSH Publish') {
+            steps {
+                echo 'SSH Publish'
+                sshPublisher(publishers: [sshPublisherDesc(configName: 'target', 
+                transfers: [sshTransfer(cleanRemote: false, 
+                excludes: '', 
+                execCommand: '''
+                fuser -k 8080/tcp
+                export BUILD_ID=Petclinic-Pipeline
+                nohup java -jar /home/ubuntu/deploy/spring-petclinic-3.5.0.BUILD-SNAPSHOT.jar >> nohup.out 2>&1 &''', 
+                execTimeout: 120000, 
+                flatten: false, 
+                makeEmptyDirs: false, 
+                noDefaultExcludes: false, 
+                patternSeparator: '[, ]+', 
+                remoteDirectory: '', 
+                remoteDirectorySDF: false, 
+                removePrefix: 'target', 
+                sourceFiles: 'target/*.jar')], 
+                usePromotionTimestamp: false, 
+                useWorkspaceInPromotion: false, verbose: false)])
+            }
+        }
 
