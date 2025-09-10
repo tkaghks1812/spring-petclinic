@@ -44,35 +44,7 @@ pipeline {
         sh 'docker rmi moon2000/spring-petclinic:$BUILD_NUMBER moon2000/spring-petclinic:latest'
       }
     }
-    stage('Publish Over SSH') {
-      steps {
-        sshPublisher(publishers: [sshPublisherDesc(configName: 'target', 
-        transfers: [sshTransfer(cleanRemote: false, 
-        excludes: '', 
-        execCommand: '''
-        docker rm -f $(docker ps -aq)
-        docker rmi $(docker images -q)
-        docker run -itd -p 8080:8080 --name=spring-petclinic moon2000/spring-petclinic:latest
-        ''', 
-        execTimeout: 120000, 
-        flatten: false, 
-        makeEmptyDirs: false, 
-        noDefaultExcludes: false, 
-        patternSeparator: '[, ]+', 
-        remoteDirectory: '', 
-        remoteDirectorySDF: false, 
-        removePrefix: 'target', 
-        sourceFiles: '')], 
-        usePromotionTimestamp: false, 
-        useWorkspaceInPromotion: false, 
-        verbose: false)])
-      }
-    }
-  }
-}
-
-// *.jar 파일 전송
-stage('SSH Publish') {
+    stage('SSH Publish') {
             steps {
                 echo 'SSH Publish'
                 sshPublisher(publishers: [sshPublisherDesc(configName: 'WEB01', 
@@ -89,13 +61,13 @@ stage('SSH Publish') {
                 patternSeparator: '[, ]+', 
                 remoteDirectory: '', 
                 remoteDirectorySDF: false, 
-                removePrefix: 'WEB01', 
+                removePrefix: 'target', 
                 sourceFiles: 'target/*.jar')], 
                 usePromotionTimestamp: false, 
                 useWorkspaceInPromotion: false, verbose: false)])
             }
         }
-stage('SSH Publish') {
+    stage('SSH Publish') {
             steps {
                 echo 'SSH Publish'
                 sshPublisher(publishers: [sshPublisherDesc(configName: 'WEB02', 
@@ -112,10 +84,12 @@ stage('SSH Publish') {
                 patternSeparator: '[, ]+', 
                 remoteDirectory: '', 
                 remoteDirectorySDF: false, 
-                removePrefix: 'WEB02', 
+                removePrefix: 'target', 
                 sourceFiles: 'target/*.jar')], 
                 usePromotionTimestamp: false, 
                 useWorkspaceInPromotion: false, verbose: false)])
             }
         }
+  }
+}
 
