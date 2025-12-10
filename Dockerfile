@@ -1,4 +1,4 @@
-FROM openjdk:17-slim
+FROM openjdk:17-jdk-slim
 #CMD ["./mvnw", "clean", "package"]
 ARG JAR_FILE_PATH=target/*.jar
 COPY ${JAR_FILE_PATH} spring-petclinic.jar
