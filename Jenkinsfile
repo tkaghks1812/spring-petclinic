@@ -8,7 +8,7 @@ pipeline {
 
   environment {
     // DockerHub 자격증명 (이미 dockerCredentials 라고 만든 거 사용)
-    DOCKERHUB_CREDENTIALS = credentials('dockerCredentials')
+    DOCKERHUB_CREDENTIALS = credentials('Docker_Hub_Pipeline')
   }
 
   stages {
