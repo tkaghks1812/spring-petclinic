@@ -55,10 +55,10 @@ pipeline {
         // petclinic-deploy 의 컨테이너 이름이 "petclinic" 이라고 가정
         sh """
           kubectl set image deployment/petclinic-deploy \
-            -n twoplusone \
+            -n petclinic \
             petclinic=moon2000/spring-petclinic:${BUILD_NUMBER}
 
-          kubectl rollout status deployment/petclinic-deploy -n twoplusone
+          kubectl rollout status deployment/petclinic-deploy -n petclinic
         """
       }
     }
